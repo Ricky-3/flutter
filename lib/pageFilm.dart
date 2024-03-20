@@ -11,87 +11,101 @@ class PageFilm extends StatefulWidget {
 }
 
 class _PageFilmState extends State<PageFilm> {
-  // Déclaration des variables qui sont demandées
-  double? lat;
-  double? lon;
-  String description = '';
-  double? temp;
-  double? tempMax;
-  double? tempMin;
-  double? vitesseDuVent;
-  int? pression;
-  int? humidite;
-  int? directionDuVent;
-  String icon = '';
-  Map<String, dynamic>? donneeMeteo; //stocke les données météorologiques
+  List<dynamic>? films;
+  List<dynamic>? series;
+  List<String>? filmImages; // Pour stocker les chemins d'accès aux images des films
+  List<String>? serieImages; // Pour stocker les chemins d'accès aux images des séries TV
 
   @override
   void initState() {
     super.initState();
-    getData(); // Récupère les données au moment où le widget est créé
+    getData();
   }
 
   @override
   Widget build(BuildContext context) {
-    // structure de la page
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Page Météo d\'Orléans'), // Titre de l'AppBar
+        title: const Text('Films et Séries TV'),
       ),
-      body: Center(       // Centre le child dans son conteneur
-        child: Column(   // Colonne pour aligner les children verticalement
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: Center(
+        child: ListView(
           children: <Widget>[
-            Image.network(
-              'http://openweathermap.org/img/w/$icon.png',
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover, // Couvre la boîte sans déformer l'image
-            ),
-            // Affichage des données météorologiques
-            Text('Latitude: $lat'),
-            Text('Longitude: $lon'),
-            Text('Description: $description'),
-            Text('Température: $temp°C'),
-            Text('Température Maximale: $tempMax°C'),
-            Text('Température Minimale: $tempMin°C'),
-            Text('Vitesse du Vent: $vitesseDuVent  m/s'),
-            Text('Pression Atmosphérique: $pression  hPa'),
-            Text('Humidité: $humidite%'),
-            Text('Direction du Vent: $directionDuVent°'),
+            if (films != null && filmImages != null)
+              Column(
+                children: [
+                  const Text('Films:'),
+                  for (int i = 0; i < films!.length; i++)
+                    ListTile(
+                      title: Text(films![i]['title']),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Date: ${films![i]['release_date']}'),
+                          Text('Langue: ${films![i]['original_language']}'),
+                        ],
+                      ),
+                      leading: Image.network(filmImages![i]), // Affichage de l'image du film
+                      onTap: () {
+                        // Afficher plus de détails sur le film si nécessaire
+                      },
+                    ),
+                ],
+              ),
+            if (series != null && serieImages != null)
+              Column(
+                children: [
+                  const Text('Séries TV:'),
+                  for (int i = 0; i < series!.length; i++)
+                    ListTile(
+                      title: Text(series![i]['name']),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Date: ${series![i]['first_air_date']}'),
+                          Text('Langue: ${series![i]['original_language']}'),
+                        ],
+                      ),
+                      leading: Image.network(serieImages![i]), // Affichage de l'image de la série TV
+                      onTap: () {
+                        // Afficher plus de détails sur la série TV si nécessaire
+                      },
+                    ),
+                ],
+              ),
           ],
         ),
       ),
     );
   }
 
-  // Fonction pour récupérer les données météorologiques depuis l'API OpenWeatherMap
+  // Fonction pour récupérer les données à partir de l'API de TMDb
   Future<void> getData() async {
-    const apiKey = '3f2333bd5cd4789ce6a31a5d10e814ba';
-    const latitude = '47.9022'; // Latitude d'Orléans
-    const longitude = '1.9040'; // Longitude d'Orléans
-    final url = Uri.parse( //API
-        'https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=$apiKey&units=metric&lang=fr');
+    const apiKey = '39cbf5c7b31a8d7cc93d49ef3c6a595c';
+    final filmsUrl = Uri.parse('https://api.themoviedb.org/3/movie/popular?api_key=$apiKey&language=fr-FR&page=1');
+    final seriesUrl = Uri.parse('https://api.themoviedb.org/3/tv/popular?api_key=$apiKey&language=fr-FR&page=1');
 
-    //requête HTTP à l'API
-    final response = await http.get(url);
-    final Map<String, dynamic> data = json.decode(response.body);
+    // Requête HTTP pour les films
+    final filmsResponse = await http.get(filmsUrl);
+    final filmsData = json.decode(filmsResponse.body);
+    final List<String> filmsImageUrls = [];
+    for (var film in filmsData['results']) {
+      filmsImageUrls.add('https://image.tmdb.org/t/p/w500${film['poster_path']}');
+    }
 
-    // Met à jour l'état avec les données météorologiques récupérées
+    // Requête HTTP pour les séries TV
+    final seriesResponse = await http.get(seriesUrl);
+    final seriesData = json.decode(seriesResponse.body);
+    final List<String> seriesImageUrls = [];
+    for (var serie in seriesData['results']) {
+      seriesImageUrls.add('https://image.tmdb.org/t/p/w500${serie['poster_path']}');
+    }
+
     setState(() {
-      donneeMeteo = data; // Stocke toutes les données météorologiques
-      lat = data['coord']['lat'];
-      lon = data['coord']['lon'];
-      description = data['weather'][0]['description'];
-      temp = data['main']['temp'];
-      tempMax = data['main']['temp_max'];
-      tempMin = data['main']['temp_min'];
-      vitesseDuVent = data['wind']['speed'];
-      pression = data['main']['pressure'];
-      humidite = data['main']['humidity'];
-      vitesseDuVent = data['wind']['speed'];
-      directionDuVent = data['wind']['deg'];
-      icon = data['weather'][0]['icon']; //icone de la météo
+      films = filmsData['results'];
+      filmImages = filmsImageUrls;
+      series = seriesData['results'];
+      serieImages = seriesImageUrls;
     });
   }
 }

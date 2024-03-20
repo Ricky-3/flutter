@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'design.dart';
+import 'film_list.dart'; // Importation du widget FilmList
+import 'serie_list.dart'; // Importation du widget SerieList
 
 class PageFilm extends StatefulWidget {
   const PageFilm({Key? key}) : super(key: key);
@@ -50,66 +52,14 @@ class _PageFilmState extends State<PageFilm> {
               child: Text('Films', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
             ),
             SizedBox(height: 10),
-            SizedBox(
-              height: 240,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: films?.length ?? 0,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(filmImages![index], width: 160, fit: BoxFit.cover),
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(films![index]['title'] ?? '', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                        SizedBox(height: 4),
-                        Text('${films![index]['release_date'] ?? ''}', style: TextStyle(color: Colors.grey)),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
+            FilmList(films: films, filmImages: filmImages), // Utilisation du widget FilmList
             SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text('Séries TV', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
             ),
             SizedBox(height: 10),
-            SizedBox(
-              height: 240,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: series?.length ?? 0,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(serieImages![index], width: 160, fit: BoxFit.cover),
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(series![index]['name'] ?? '', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                        SizedBox(height: 4),
-                        Text('${series![index]['first_air_date'] ?? ''}', style: TextStyle(color: Colors.grey)),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
+            SerieList(series: series, serieImages: serieImages), // Utilisation du widget SerieList
             SizedBox(height: 20),
           ],
         ),

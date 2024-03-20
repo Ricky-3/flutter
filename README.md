@@ -3,11 +3,6 @@
 A new Flutter project.
 
 ## Getting Started
-tttttt
-aaaa
-zszzz
-ww
-aaaagggggg
 
 This project is a starting point for a Flutter application.
 

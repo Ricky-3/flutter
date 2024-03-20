@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-//import './Page.dart';
+import './pageFilm.dart';
 
 
 void main() {
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      //home: const (),
+      home: const PageFilm(),
     );
   }
 }

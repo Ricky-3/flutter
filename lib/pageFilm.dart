@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
+import 'design.dart';
 
 class PageFilm extends StatefulWidget {
   const PageFilm({Key? key}) : super(key: key);
@@ -34,37 +35,9 @@ class _PageFilmState extends State<PageFilm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: const Text('CineMatch', style: TextStyle(color: Colors.red)),
-      ),
+      appBar: CustomAppBar(title: 'Cinematch'),
       backgroundColor: Colors.black,
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.black,
-              ),
-              child: Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              title: Text('Accueil', style: TextStyle(color: Colors.black)),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            // Ajouter d'autres options du menu ici au besoin
-          ],
-        ),
-      ),
+      drawer: CustomDrawer(),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,7 +52,7 @@ class _PageFilmState extends State<PageFilm> {
             SizedBox(height: 10),
             SizedBox(
               height: 240,
-              child: PageView.builder(
+              child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: films?.length ?? 0,
                 itemBuilder: (context, index) {
@@ -95,9 +68,9 @@ class _PageFilmState extends State<PageFilm> {
                           ),
                         ),
                         SizedBox(height: 8),
-                        Text(films![index]['title'], style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text(films![index]['title'] ?? '', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                         SizedBox(height: 4),
-                        Text('${films![index]['release_date']}', style: TextStyle(color: Colors.grey)),
+                        Text('${films![index]['release_date'] ?? ''}', style: TextStyle(color: Colors.grey)),
                       ],
                     ),
                   );
@@ -112,7 +85,7 @@ class _PageFilmState extends State<PageFilm> {
             SizedBox(height: 10),
             SizedBox(
               height: 240,
-              child: PageView.builder(
+              child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: series?.length ?? 0,
                 itemBuilder: (context, index) {
@@ -128,9 +101,9 @@ class _PageFilmState extends State<PageFilm> {
                           ),
                         ),
                         SizedBox(height: 8),
-                        Text(series![index]['name'], style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text(series![index]['name'] ?? '', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                         SizedBox(height: 4),
-                        Text('${series![index]['first_air_date']}', style: TextStyle(color: Colors.grey)),
+                        Text('${series![index]['first_air_date'] ?? ''}', style: TextStyle(color: Colors.grey)),
                       ],
                     ),
                   );
@@ -163,7 +136,7 @@ class _PageFilmState extends State<PageFilm> {
       filmsImageUrls.add('https://image.tmdb.org/t/p/w500${film['poster_path']}');
     }
 
-// Requête HTTP pour les séries TV
+    // Requête HTTP pour les séries TV
     final seriesResponse = await http.get(seriesUrl);
     final seriesData = json.decode(seriesResponse.body);
     final List<String> seriesImageUrls = [];
@@ -177,6 +150,5 @@ class _PageFilmState extends State<PageFilm> {
       series = seriesData['results'];
       serieImages = seriesImageUrls;
     });
-
   }
 }

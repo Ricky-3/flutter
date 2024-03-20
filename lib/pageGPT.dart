@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-// Fonction pour envoyer une prompte à ChatGPT et obtenir une réponse
+// Fonction pour envoyer une prompt à ChatGPT et obtenir une réponse
 Future<String> envoyerPrompteAChatGPT(String prompte) async {
   // Remplacez 'VOTRE_CLÉ_API' par votre clé API réelle
   const apiKey = 'VOTRE_CLÉ_API';
